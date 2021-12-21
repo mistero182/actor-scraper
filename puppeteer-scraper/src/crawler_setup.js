@@ -169,7 +169,7 @@ class CrawlerSetup {
     async createCrawler() {
         await this.initPromise;
 
-        const args = [];
+        const args = ['--window-size=1920,1080'];
         if (this.input.ignoreCorsAndCsp) args.push('--disable-web-security');
 
         const options = {
@@ -188,8 +188,12 @@ class CrawlerSetup {
                 useChrome: this.input.useChrome,
                 stealth: this.input.useStealth,
                 launchOptions: {
+                    headless: false,
                     ignoreHTTPSErrors: this.input.ignoreSslErrors,
-                    defaultViewport: DEFAULT_VIEWPORT,
+                    defaultViewport: {
+                        width:1920,
+                        height:1080
+                    },
                     devtools: this.devtools,
                     args,
                 },
