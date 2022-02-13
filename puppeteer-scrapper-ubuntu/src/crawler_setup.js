@@ -169,7 +169,11 @@ class CrawlerSetup {
     async createCrawler() {
         await this.initPromise;
 
-        const args = ['--window-size=1920,1080'];
+        const args = [
+            '--window-size=1920,1080',
+            '--user-agent=Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.82 Safari/537.36',
+        ];
+
         if (this.input.ignoreCorsAndCsp) args.push('--disable-web-security');
 
         const options = {
