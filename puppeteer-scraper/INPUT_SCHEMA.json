@@ -143,7 +143,7 @@
       "title": "OS & browser info visible for web site",
       "type": "string",
       "description": "Change the user-agent to bypass specific OS and browsers restrictions",
-      "prefill": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.82 Safari/537.36",
+      "prefill": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.82 Safari/537.36"
     },
     "downloadMedia": {
       "sectionCaption": "Performance and limits",
