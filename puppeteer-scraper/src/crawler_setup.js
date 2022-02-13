@@ -174,7 +174,7 @@ class CrawlerSetup {
         ];
 
         if (this.input.ignoreCorsAndCsp) args.push('--disable-web-security');
-        if (this.input.userAgent) args.push(this.input.userAgent);
+        if (this.input.userAgent) args.push(`--user-agent=${this.input.userAgent}`);
 
         const options = {
             handlePageFunction: this._handlePageFunction.bind(this),
