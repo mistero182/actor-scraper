@@ -1,0 +1,31 @@
+{
+    "startUrls": [
+        {
+            "url": "https://www.eapteka.ru/search/?q=TENA&b=tena",
+            "method": "GET",
+            "userData": {
+                "Manufacturer": "SCA",
+                "Brand": "Tena"
+            }
+        }
+    ],
+    "pageFunction": "async function pageFunction(context) {\n    const { page, response, request, log, enqueueRequest } = context;\n    \n    console.log('HanldePazgFunction')\n    const { Manufacturer, Brand, Paginated } = request.userData;\n\n    //const screenshotBuffer = await page.screenshot();\n    //debug screenshots for pagination\n    //const key = request.userData.Page || \"1\"; //has to be unique to get a screentshot per input\n    //await Apify.setValue(key, screenshotBuffer, { contentType: 'image/png' });\n    //await page.waitFor('.cc-item--group section.cc-item', { timeout: 0 });\n\n    await page.waitForSelector('.cc-item--group section.cc-item', { timeout: 0 });\n\n    if (!Paginated) {\n        const totalNumberOfProducts = await page.evaluate(() => parseInt(document.querySelector(`small[class=\"text-muted d-block d-sm-inline\"]`).textContent.match(/\\d+/g)[0]));\n        const totalNumberOfPages = Math.ceil(totalNumberOfProducts / 25);\n        log.info(`Total number of products:   ${totalNumberOfProducts}  over  ${totalNumberOfPages}   pages. Current url: ${request.url}`);\n\n        for (let i = 2; i <= totalNumberOfPages; i++) {\n            const nextUrl = `${request.url}&PAGEN_1=${i}`;\n            log.info(`Queing page ${i} of ${totalNumberOfPages} - ${nextUrl}`);\n\n            const pageRequest = {\n                url: nextUrl,\n                userData: {\n                    ...request.userData,\n                    Paginated: true,\n                },\n            };\n\n            await enqueueRequest(pageRequest);\n        }\n    }\n\n    const products = await page.$$eval('.cc-item--group section.cc-item', ($products, Manufacturer) => {\n       // console.log(`************** ${manufacturer}`);\n        //console.log(`************** ${urlPrefix}`);\n\n        const results = [];\n        $products.forEach(product => {\n            const productId = product.getAttribute('data-xml-id');\n            const productUrl = product.querySelector('meta[itemprop=\"url\"]').getAttribute('content');\n            const productName = product.querySelector('meta[itemprop=\"name\"]').getAttribute('content');\n            const price = product.querySelector('meta[itemprop=\"price\"]').getAttribute('content');\n            const image = product.querySelector('meta[itemprop=\"image\"]').getAttribute('content');\n            const availability = product.querySelector('link[itemprop=\"availability\"]').getAttribute('href');\n            const stock = availability.includes('OutOfStock') || availability.includes('SoldOut') ? \"OutOfStock\" : \"InStock\";\n\n            const result = {\n                ProductId: productId,\n                ProductName: productName,\n                Manufacturer,\n                Price: price,\n                Stock: stock,\n                ImageUri: image,\n                ProductUrl: productUrl,\n            };\n\n            results.push(result);\n        });\n\n        return results;\n    }, Manufacturer);\n\n    log.debug(`Saving ${products.length} products for ${Brand}`);\n    return products;\n}",
+    "preNavigationHooks": "[\n    async (crawlingContext, gotoOptions) => {\n        const { page } = crawlingContext;     \n        await page.evaluate(async () => {\n            console.log('Prego function');\n        },);\n        // ...\n        await page.setRequestInterception(true);\n        page.on('request', async (request) => {\n            const url = request.url();\n            const filters = [\n                //'png',\n                //'jpg',\n                //'js',\n                //'jpeg',\n                //'css',\n                //'ico',\n                //'xml',\n                \n            ];\n\n            const shouldAbort = filters.some((urlPart) => url.includes(urlPart));\n            if (shouldAbort) {\n                await page.evaluate(async (url) => {\n                    console.log('Aborted: ' + url);\n                }, url);\n                request.abort();\n            }\n            else request.continue();\n        });\n    },\n]",
+    "proxyConfiguration": {
+        "useApifyProxy": false,
+        "proxyUrls": [
+            "http://groups-RESIDENTIAL,country-RU:FFFR2R3GoH4Fw9pWaZvLsdzyj@proxy.apify.com:8000"
+        ]
+    },
+    "useChrome": false,
+    "useStealth": false,
+    "ignoreSslErrors": true,
+    "ignoreCorsAndCsp": true,
+    "waitUntil": [
+        "networkidle2"
+    ],
+    "debugLog": true,
+    "browserLog": true,
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.82 Safari/537.36",
+    "headless": false
+}

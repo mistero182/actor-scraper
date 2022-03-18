@@ -1,0 +1,17 @@
+{
+	"name": "autodoc-custom-actor-puppeteer-v2",
+	"version": "0.1.4",
+	"description": "Custom puppeteer actor for AutodocDE",
+	"dependencies": {
+		"@apify/scraper-tools": "^0.4.4",
+        "apify": "2.2.0",
+		"safe-eval": "0.4.1",
+		"puppeteer": "10.2.0",
+		"cheerio": "1.0.0-rc.10"
+	},
+	"devDependencies": {},
+	"scripts": {
+		"start": "rm -rf ./apify_storage/* && node main.js"
+	},
+	"author": "Eduard"
+}
